@@ -1,0 +1,24 @@
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tap-server-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tap-server
+  template:
+    metadata:
+      labels:
+        app: tap-server
+    spec:
+      containers:
+      - name: spark-thrift-axs
+        image: ctslater/spark-tap-service
+        ports:
+        - containerPort: 8080
+        env:
+        - name: CATALINA_OPTS
+          value: "-Dtapuser.jdbc.username= -Dtapuser.jdbc.password= -Dtapuser.jdbc.driverClassName=org.apache.hive.jdbc.HiveDriver -Dtapuser.jdbc.url=jdbc:hive2://thrift-service:10000/"
+

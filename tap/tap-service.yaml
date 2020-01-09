@@ -1,0 +1,13 @@
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: tap-service
+spec:
+  selector:
+    app: tap-server
+  ports:
+    - name: tap-http
+      protocol: TCP
+      port: 8080
+      targetPort: 8080
