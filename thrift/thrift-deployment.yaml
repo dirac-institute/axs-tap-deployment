@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: spark-thrift-deployment
+  labels:
+    app: spark-thrift
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: spark-thrift-driver
+  template:
+    metadata:
+      labels:
+        app: spark-thrift-driver
+    spec:
+      containers:
+      - name: spark-thrift-axs
+        image: ctslater/spark-axs-hive
+        ports:
+        - containerPort: 10000
+          # args: ["driver", "--class","org.apache.spark.sql.hive.thriftserver.HiveThriftServer2", "spark-internal"]
+          #
+        args: ["/opt/spark/sbin/start-thriftserver.sh", "--master", "k8s://https://kubernetes.default.svc", "--deploy-mode", "client",
+                "--name", "spark-sql", "--conf", "spark.executor.instances=2",
+                "--conf", "spark.kubernetes.namespace=ctslater",
+                "--conf", "spark.driver.host=spark-thrift-driver-svc",
+                "--conf", "spark.driver.port=4444",
+                "--conf", "spark.driver.bindAddress=0.0.0.0",
+                "--conf", "spark.kubernetes.container.image=ctslater/spark-axs-hive"]
+                
+          #args: ["sleep", "infinity"]
+        env:
+        - name: SPARK_NO_DAEMONIZE
+          value: "1"
+        volumeMounts:
+        - name: work-dir
+          mountPath: /opt/spark/work-dir
+        - name: logs
+          mountPath: /opt/spark/logs/
+      # This pod needs extra permissions to start the executor pods
+      serviceAccountName: thrift-sa
+        # securityContext:
+        # fsGroup: 1337
+      volumes:
+      - name: work-dir
+        emptyDir: {}
+      - name: logs
+        emptyDir: {}

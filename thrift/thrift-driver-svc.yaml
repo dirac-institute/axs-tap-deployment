@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: spark-thrift-driver-svc
+spec:
+  clusterIP: None
+  selector:
+    app: spark-thrift-driver
+  ports:
+    - name: spark
+      protocol: TCP
+      port: 4444
+      targetPort: 4444

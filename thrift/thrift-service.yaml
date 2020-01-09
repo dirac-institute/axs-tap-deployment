@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: thrift-service
+spec:
+  selector:
+    app: spark-thrift-driver
+  ports:
+    - name: thrift
+      protocol: TCP
+      port: 10000
+      targetPort: 10000
