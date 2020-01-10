@@ -19,17 +19,14 @@ spec:
         image: ctslater/spark-axs-hive
         ports:
         - containerPort: 10000
-          # args: ["driver", "--class","org.apache.spark.sql.hive.thriftserver.HiveThriftServer2", "spark-internal"]
-          #
         args: ["/opt/spark/sbin/start-thriftserver.sh", "--master", "k8s://https://kubernetes.default.svc", "--deploy-mode", "client",
                 "--name", "spark-sql", "--conf", "spark.executor.instances=2",
+                "--packages",  "org.apache.hadoop:hadoop-aws:2.7.4",
                 "--conf", "spark.kubernetes.namespace=ctslater",
                 "--conf", "spark.driver.host=spark-thrift-driver-svc",
                 "--conf", "spark.driver.port=4444",
                 "--conf", "spark.driver.bindAddress=0.0.0.0",
                 "--conf", "spark.kubernetes.container.image=ctslater/spark-axs-hive"]
-                
-          #args: ["sleep", "infinity"]
         env:
         - name: SPARK_NO_DAEMONIZE
           value: "1"
