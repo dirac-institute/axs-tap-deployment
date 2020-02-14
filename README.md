@@ -20,3 +20,7 @@ version of the CADC TAP server, adding hive-jdbc drivers. This exposes
 http://tap-service:8080, which serves as the TAP endpoint (e.g.
 http://tap-service:8080/tap/capabilities or http://tap-service:8080/tap/tables)
 
+
+Not in the deployment scripts: need  a service account called `thrift-sa`, which
+needs to be created with AWS's tools to allow an IAM role/policy to be
+associated for S3 permissions.

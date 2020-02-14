@@ -14,6 +14,15 @@ spec:
       labels:
         app: spark-thrift-driver
     spec:
+      initContainers:
+      - name: block-cloud-metadata
+        image:  jupyterhub/k8s-network-tools:0.8.2
+        command: ["iptables", "-A", "OUTPUT", "-d", "169.254.169.254", "-j", "DROP"]
+        securityContext:
+            privileged: true
+            runAsUser: 0
+            capabilities: 
+              add: ["NET_ADMIN"]
       containers:
       - name: spark-thrift-axs
         image: ctslater/spark-axs-hive
@@ -21,26 +30,38 @@ spec:
         - containerPort: 10000
         args: ["/opt/spark/sbin/start-thriftserver.sh", "--master", "k8s://https://kubernetes.default.svc", "--deploy-mode", "client",
                 "--name", "spark-sql", "--conf", "spark.executor.instances=2",
-                "--packages",  "org.apache.hadoop:hadoop-aws:2.7.4",
+                "--conf", "spark.driver.extraJavaOptions=-agentlib:jdwp=transport=dt_socket,address=5000,server=y,suspend=n",
                 "--conf", "spark.kubernetes.namespace=ctslater",
                 "--conf", "spark.driver.host=spark-thrift-driver-svc",
                 "--conf", "spark.driver.port=4444",
                 "--conf", "spark.driver.bindAddress=0.0.0.0",
+                "--conf", "spark.hadoop.fs.s3a.aws.credentials.provider=com.amazonaws.auth.DefaultAWSCredentialsProviderChain",
+                # This sharedPrefixes setting is critical, otherwise there will be errors like
+                # "Class class com.amazonaws.auth.com.amazonaws.auth.DefaultAWSCredentialsProviderChain does not
+                # implement AWSCredentialsProvider"
+                "--conf", "spark.sql.hive.metastore.sharedPrefixes=com.amazonaws.",
                 "--conf", "spark.kubernetes.container.image=ctslater/spark-axs-hive"]
         env:
         - name: SPARK_NO_DAEMONIZE
           value: "1"
+        - name: AWS_REGION
+          value: "us-west-2"
         volumeMounts:
         - name: work-dir
           mountPath: /opt/spark/work-dir
         - name: logs
           mountPath: /opt/spark/logs/
+        - name: ivycache
+          mountPath: /opt/spark/.ivy2
       # This pod needs extra permissions to start the executor pods
       serviceAccountName: thrift-sa
-        # securityContext:
-        # fsGroup: 1337
+      securityContext:
+        # Need to specify this so the AWS token file is readable by non-root.
+        fsGroup: 1337
       volumes:
       - name: work-dir
         emptyDir: {}
       - name: logs
+        emptyDir: {}
+      - name: ivycache
         emptyDir: {}
