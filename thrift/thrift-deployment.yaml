@@ -48,7 +48,9 @@ spec:
                 # implement AWSCredentialsProvider"
                 # See https://www.opencore.com/blog/2018/3/spark-shared-prefixes/
                 "--conf", "spark.sql.hive.metastore.sharedPrefixes=com.amazonaws.",
-                "--conf", "spark.kubernetes.container.image=ctslater/spark-axs-hive"]
+                "--conf", "spark.kubernetes.executor.podTemplateFile=/opt/spark/templates/spark-exec-template.yaml",
+                "--conf", "spark.kubernetes.container.image=ctslater/spark-axs-hive"
+                ]
         env:
         - name: SPARK_NO_DAEMONIZE
           value: "1"
@@ -61,6 +63,8 @@ spec:
           mountPath: /opt/spark/logs/
         - name: ivycache
           mountPath: /opt/spark/.ivy2
+        - name: exectemplate
+          mountPath: /opt/spark/templates/
       # This pod needs extra permissions to start the executor pods
       serviceAccountName: thrift-sa
       securityContext:
@@ -73,3 +77,9 @@ spec:
         emptyDir: {}
       - name: ivycache
         emptyDir: {}
+      - name: exectemplate
+        configMap:
+          name: exectemplate
+          items:
+            - key: spark-exec-template.yaml
+              path: spark-exec-template.yaml

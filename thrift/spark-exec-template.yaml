@@ -1,0 +1,58 @@
+# Need this to create the initContainer that blocks the pod from 
+# accessing the metadata server. Ensures that the s3 plugin picks up
+# the right auth mechanism.
+#
+# kubectl create configmap exectemplate --from-file=thrift/spark-exec-template.yaml
+spec:
+  initContainers:
+  - name: block-cloud-metadata
+    image:  jupyterhub/k8s-network-tools:0.8.2
+    command: ["iptables", "-A", "OUTPUT", "-d", "169.254.169.254", "-j", "DROP"]
+    securityContext:
+        privileged: true
+        runAsUser: 0
+        capabilities: 
+          add: ["NET_ADMIN"]
+  containers:
+  - args:
+    - executor
+    image: ctslater/spark-axs-hive
+    imagePullPolicy: IfNotPresent
+    name: spark-kubernetes-executor
+    env:
+    - name: AWS_REGION
+      value: "us-west-2"
+    ports:
+    - containerPort: 7079
+      name: blockmanager
+      protocol: TCP
+    resources:
+      limits:
+        memory: 1408Mi
+      requests:
+        cpu: "1"
+        memory: 1408Mi
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+  dnsPolicy: ClusterFirst
+  enableServiceLinks: true
+  priority: 0
+  restartPolicy: Never
+  schedulerName: default-scheduler
+#  securityContext: {}
+#  serviceAccount: default
+#  serviceAccountName: default
+  serviceAccountName: thrift-sa
+  securityContext:
+    # Need to specify this so the AWS token file is readable by non-root.
+    fsGroup: 1337
+  terminationGracePeriodSeconds: 30
+  tolerations:
+  - effect: NoExecute
+    key: node.kubernetes.io/not-ready
+    operator: Exists
+    tolerationSeconds: 300
+  - effect: NoExecute
+    key: node.kubernetes.io/unreachable
+    operator: Exists
+    tolerationSeconds: 300
