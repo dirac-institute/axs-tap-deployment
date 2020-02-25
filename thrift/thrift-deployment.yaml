@@ -28,17 +28,25 @@ spec:
         image: ctslater/spark-axs-hive
         ports:
         - containerPort: 10000
+        - containerPort: 7123
         args: ["/opt/spark/sbin/start-thriftserver.sh", "--master", "k8s://https://kubernetes.default.svc", "--deploy-mode", "client",
-                "--name", "spark-sql", "--conf", "spark.executor.instances=2",
+                "--name", "spark-sql",
+                "--conf", "spark.executor.instances=2",
+                # Enables JDB debugging. Can be removed when no longer needed.
                 "--conf", "spark.driver.extraJavaOptions=-agentlib:jdwp=transport=dt_socket,address=5000,server=y,suspend=n",
                 "--conf", "spark.kubernetes.namespace=ctslater",
                 "--conf", "spark.driver.host=spark-thrift-driver-svc",
                 "--conf", "spark.driver.port=4444",
                 "--conf", "spark.driver.bindAddress=0.0.0.0",
+                # Other credential providers like STSAssumeRoleWithWebIdentitySessionCredentialsProvider
+                # don't have the right API; the default chain seems to make up for those.
                 "--conf", "spark.hadoop.fs.s3a.aws.credentials.provider=com.amazonaws.auth.DefaultAWSCredentialsProviderChain",
+                # This takes a random port if not specified; need to expose it through thrift-driver-svc
+                "--conf", "spark.blockManager.port=7123",
                 # This sharedPrefixes setting is critical, otherwise there will be errors like
                 # "Class class com.amazonaws.auth.com.amazonaws.auth.DefaultAWSCredentialsProviderChain does not
                 # implement AWSCredentialsProvider"
+                # See https://www.opencore.com/blog/2018/3/spark-shared-prefixes/
                 "--conf", "spark.sql.hive.metastore.sharedPrefixes=com.amazonaws.",
                 "--conf", "spark.kubernetes.container.image=ctslater/spark-axs-hive"]
         env:

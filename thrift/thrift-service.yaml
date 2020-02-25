@@ -10,3 +10,7 @@ spec:
       protocol: TCP
       port: 10000
       targetPort: 10000
+    - name: sparkui
+      protocol: TCP
+      port: 4040
+      targetPort: 4040
