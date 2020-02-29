@@ -1,0 +1,143 @@
+
+CREATE DATABASE IF NOT EXISTS tap_schema;
+
+CREATE EXTERNAL TABLE IF NOT EXISTS tap_schema.schemas11
+(
+	schema_name   varchar(64),
+	utype         varchar(512),
+	description   varchar(512),
+        schema_index  integer,
+        owner_id        varchar(32),
+        read_anon       integer,
+        read_only_group  varchar(128),
+        read_write_group varchar(128)
+) row format delimited fields terminated by ','
+STORED AS TEXTFILE LOCATION 's3a://axscatalog/TAP_SCHEMA/schemas11/';
+
+
+CREATE TABLE IF NOT EXISTS tap_schema.schemas
+(
+	schema_name   varchar(64),
+	utype         varchar(512),
+	description   varchar(512),
+        schema_index  integer,
+        owner_id        varchar(32),
+        read_anon       integer,
+        read_only_group  varchar(128),
+        read_write_group varchar(128)
+) row format delimited fields terminated by ',';
+
+
+
+CREATE EXTERNAL TABLE IF NOT EXISTS tap_schema.tables11
+(
+	schema_name   varchar(64)  ,
+	table_name    varchar(128) ,
+        table_type    varchar(8)   ,
+	utype         varchar(512),
+	description   varchar(512),
+	table_index   integer,
+        owner_id        varchar(32),
+        read_anon       integer,
+        read_only_group  varchar(128),
+        read_write_group varchar(128)
+) row format delimited fields terminated by ','
+STORED AS TEXTFILE LOCATION 's3a://axscatalog/TAP_SCHEMA/tables11/';
+
+CREATE TABLE IF NOT EXISTS tap_schema.tables
+(
+	schema_name   varchar(64)  ,
+	table_name    varchar(128) ,
+        table_type    varchar(8)   ,
+	utype         varchar(512),
+	description   varchar(512),
+	table_index   integer,
+        owner_id        varchar(32),
+        read_anon       integer,
+        read_only_group  varchar(128),
+        read_write_group varchar(128)
+    ) row format delimited fields terminated by ',';
+
+CREATE EXTERNAL TABLE IF NOT EXISTS tap_schema.columns11
+(
+	table_name    varchar(128) ,
+	column_name   varchar(64)  ,
+	utype         varchar(512),
+	ucd           varchar(64),
+	unit          varchar(64),
+	description   varchar(512),
+	datatype      varchar(64)  ,
+-- TAP-1.1 arraysize
+	arraysize     varchar(16),
+-- TAP-1.1 xtype
+        xtype         varchar(64),
+-- TAP-1.1 size is deprecated
+	size          integer,
+	principal     integer      ,
+	indexed       integer      ,
+	std           integer      ,
+-- TAP-1.1 column_index
+	column_index   integer,
+-- extension: globally unique columnID for use as an XML ID attribute on the FIELD in VOTable output
+        id            varchar(32)
+) row format delimited fields terminated by ','
+STORED AS TEXTFILE LOCATION 's3a://axscatalog/TAP_SCHEMA/columns11/';
+
+CREATE TABLE IF NOT EXISTS tap_schema.columns
+(
+	table_name    varchar(128) ,
+	column_name   varchar(64)  ,
+	utype         varchar(512),
+	ucd           varchar(64),
+	unit          varchar(64),
+	description   varchar(512),
+	datatype      varchar(64)  ,
+-- TAP-1.1 arraysize
+	arraysize     varchar(16),
+-- TAP-1.1 xtype
+        xtype         varchar(64),
+-- TAP-1.1 size is deprecated
+	size          integer,
+	principal     integer      ,
+	indexed       integer      ,
+	std           integer      ,
+-- TAP-1.1 column_index
+	column_index   integer,
+-- extension: globally unique columnID for use as an XML ID attribute on the FIELD in VOTable output
+        id            varchar(32)
+) row format delimited fields terminated by ',';
+
+CREATE TABLE IF NOT EXISTS tap_schema.keys11
+(
+	key_id        varchar(64)  ,
+	from_table    varchar(128) ,
+	target_table  varchar(128) ,
+	utype         varchar(512),
+	description   varchar(512)
+);
+
+CREATE TABLE IF NOT EXISTS tap_schema.keys
+(
+	key_id        varchar(64)  ,
+	from_table    varchar(128) ,
+	target_table  varchar(128) ,
+	utype         varchar(512),
+	description   varchar(512)
+);
+
+
+CREATE TABLE IF NOT EXISTS tap_schema.key_columns11
+(
+	key_id          varchar(64) ,
+	from_column     varchar(64) ,
+	target_column   varchar(64) 
+);
+
+
+CREATE TABLE IF NOT EXISTS tap_schema.key_columns
+(
+	key_id          varchar(64) ,
+	from_column     varchar(64) ,
+	target_column   varchar(64) 
+);
+

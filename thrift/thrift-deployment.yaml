@@ -63,6 +63,8 @@ spec:
           mountPath: /opt/spark/logs/
         - name: ivycache
           mountPath: /opt/spark/.ivy2
+        - name: awscache
+          mountPath: /opt/spark/.aws
         - name: exectemplate
           mountPath: /opt/spark/templates/
       # This pod needs extra permissions to start the executor pods
@@ -76,6 +78,8 @@ spec:
       - name: logs
         emptyDir: {}
       - name: ivycache
+        emptyDir: {}
+      - name: awscache
         emptyDir: {}
       - name: exectemplate
         configMap:
