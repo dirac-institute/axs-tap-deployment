@@ -35,6 +35,7 @@ spec:
                 # Enables JDB debugging. Can be removed when no longer needed.
                 "--conf", "spark.driver.extraJavaOptions=-agentlib:jdwp=transport=dt_socket,address=5000,server=y,suspend=n",
                 "--conf", "spark.kubernetes.namespace=ctslater",
+                "--conf", "spark.kubernetes.driver.pod.name=$(DRIVER_POD_NAME)",
                 "--conf", "spark.driver.host=spark-thrift-driver-svc",
                 "--conf", "spark.driver.port=4444",
                 "--conf", "spark.driver.bindAddress=0.0.0.0",
@@ -56,6 +57,10 @@ spec:
           value: "1"
         - name: AWS_REGION
           value: "us-west-2"
+        - name: DRIVER_POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
         volumeMounts:
         - name: work-dir
           mountPath: /opt/spark/work-dir
