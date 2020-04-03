@@ -1,4 +1,7 @@
-
+-- 
+-- Create this as a configmap with
+-- kubectl create configmap tap-schema-s3 --from-file=ztf_oct19.hivesql,tap_schema/tap_schema_s3.hivesql
+--
 CREATE DATABASE IF NOT EXISTS tap_schema;
 
 CREATE EXTERNAL TABLE IF NOT EXISTS tap_schema.schemas11

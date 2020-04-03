@@ -72,6 +72,8 @@ spec:
           mountPath: /opt/spark/.aws
         - name: exectemplate
           mountPath: /opt/spark/templates/
+        - name: schemas
+          mountPath: /opt/spark/schemas/
       # This pod needs extra permissions to start the executor pods
       serviceAccountName: thrift-sa
       securityContext:
@@ -92,3 +94,11 @@ spec:
           items:
             - key: spark-exec-template.yaml
               path: spark-exec-template.yaml
+      - name: schemas
+        configMap:
+          name: tap-schema-s3
+          items:
+          - key: tap_schema_s3.hivesql
+            path: tap_schema_s3.hivesql
+          - key: ztf_oct19.hivesql
+            path: ztf_oct19.hivesql

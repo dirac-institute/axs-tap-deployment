@@ -1,0 +1,7 @@
+-- Create as a configmap
+-- kubectl create configmap tap-schema-s3 --from-file=ztf_oct19.hivesql,tap_schema/tap_schema_s3.hivesql
+
+CREATE DATABASE ztf;
+
+CREATE EXTERNAL TABLE ztf.ztf_oct19 (objid BIGINT,ra DOUBLE,dec DOUBLE,mean_mag_g DOUBLE,mean_mag_r DOUBLE,mean_mag_i DOUBLE,_debug_first_ra DOUBLE,_debug_first_dec DOUBLE,ps1_gMeanPSFMag DOUBLE,ps1_rMeanPSFMag DOUBLE,ps1_iMeanPSFMag DOUBLE,mjd_g ARRAY<DOUBLE>,mag_g ARRAY<FLOAT>,magerr_g ARRAY<FLOAT>,psfflux_g ARRAY<FLOAT>,psffluxerr_g ARRAY<FLOAT>,catflags_g ARRAY<SMALLINT>,expid_g ARRAY<INT>,xpos_g ARRAY<FLOAT>,ypos_g ARRAY<FLOAT>,nobs_g BIGINT,mjd_r ARRAY<DOUBLE>,mag_r ARRAY<FLOAT>,magerr_r ARRAY<FLOAT>,psfflux_r ARRAY<FLOAT>,psffluxerr_r ARRAY<FLOAT>,catflags_r ARRAY<SMALLINT>,expid_r ARRAY<INT>,xpos_r ARRAY<FLOAT>,ypos_r ARRAY<FLOAT>,nobs_r BIGINT,mjd_i ARRAY<DOUBLE>,mag_i ARRAY<FLOAT>,magerr_i ARRAY<FLOAT>,psfflux_i ARRAY<FLOAT>,psffluxerr_i ARRAY<FLOAT>,catflags_i ARRAY<SMALLINT>,expid_i ARRAY<INT>,xpos_i ARRAY<FLOAT>,ypos_i ARRAY<FLOAT>,nobs_i BIGINT,zone BIGINT,dup INT) STORED AS PARQUET LOCATION 's3a://axscatalog/ztf_oct19/';
+

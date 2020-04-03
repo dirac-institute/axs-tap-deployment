@@ -1,5 +1,7 @@
-
-val table_name = "gaia_dr2"
+// Run with bin/spark-shell --conf spark.hadoop.fs.s3a.aws.credentials.provider=com.amazonaws.auth.DefaultAWSCredentialsProviderChain -I make_ddl.scala
+// val table_name = "ztf_oct19"
+// val path = "s3a://axscatalog/ztf_oct19/"
+val table_name = "gaiadr2.gaia_source"
 val path = "s3a://axscatalog/gaiadr2/"
 val df = spark.read.parquet(path)
 val schema = df.schema
